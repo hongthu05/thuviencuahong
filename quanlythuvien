@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Thư Viện</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+        }
+        
+        nav {
+            background-color: #34495e;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .main-menu {
+            display: flex;
+        }
+        
+        .main-menu a, .user-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        
+        .main-menu a:hover, .user-menu a:hover {
+            background-color: #2c3e50;
+        }
+        
+        .main-menu a.active, .user-menu a.active {
+            background-color: #1abc9c;
+        }
+        
+        .user-menu {
+            display: flex;
+        }
+        
+        main {
+            padding: 20px;
+            min-height: calc(100vh - 172px);
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #16a085;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .search-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-container input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .book-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .book-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .book-info {
+            padding: 15px;
+        }
+        
+        .book-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .book-author {
+            color: #777;
+            margin-bottom: 10px;
+        }
+        
+        .book-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        .available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .borrowed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/api/placeholder/1200/400');
+            background-size: cover;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-banner h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-banner p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #1abc9c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #16a085;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #1abc9c;
+        }
+        
+        .stat-card p {
+            color: #777;
+        }
+        
+        .featured-section {
+            margin-bottom: 30px;
+        }
+        
+        .featured-section h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1abc9c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Hệ Thống Quản Lý Thư Viện</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="main-menu">
+            <a href="#" class="nav-link active" data-page="home">Trang Chủ</a>
+            <a href="#" class="nav-link" data-page="search">Tìm Kiếm Sách</a>
+            <a href="#" class="nav-link" data-page="borrow-return">Mượn & Trả Sách</a>
+            <a href="#" class="nav-link" data-page="readers">Quản Lý Độc Giả</a>
+        </div>
+        <div class="user-menu" id="user-menu-guest">
+            <a href="#" class="nav-link" data-page="login">Đăng Nhập</a>
+            <a href="#" class="nav-link" data-page="register">Đăng Ký</a>
+        </div>
+        <div class="user-menu" id="user-menu-loggedin" style="display: none;">
+            <a href="#" id="logout-btn">Đăng Xuất</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Trang Chủ -->
+        <div class="page active" id="home">
+            <div class="welcome-banner">
+                <h2>Chào mừng đến với Thư Viện</h2>
+                <p>Khám phá kho tàng tri thức với hàng ngàn đầu sách phong phú. Hãy đăng nhập để bắt đầu mượn sách và tham gia vào hành trình khám phá kiến thức!</p>
+                <a href="#" class="btn" data-page="search">Khám phá ngay</a>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>5,000+</h3>
+                    <p>Đầu sách</p>
+                </div>
+                <div class="stat-card">
+                    <h3>1,000+</h3>
+                    <p>Độc giả</p>
+                </div>
+                <div class="stat-card">
+                    <h3>500+</h3>
+                    <p>Lượt mượn hàng tháng</p>
+                </div>
+                <div class="stat-card">
+                    <h3>24/7</h3>
+                    <p>Dịch vụ trực tuyến</p>
+                </div>
+            </div>
+            
+            <div class="featured-section">
+                <h2>Sách Nổi Bật</h2>
+                <div class="book-grid">
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách nổi bật">
+                        <div class="book-info">
+                            <div class="book-title">Đắc Nhân Tâm</div>
+                            <div class="book-author">Dale Carnegie</div>
+                            <div class="book-status available">Có sẵn</div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách nổi bật">
+                        <div class="book-info">
+                            <div class="book-title">Nhà Giả Kim</div>
+                            <div class="book-author">Paulo Coelho</div>
+                            <div class="book-status available">Có sẵn</div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách nổi bật">
+                        <div class="book-info">
+                            <div class="book-title">Hai Số Phận</div>
+                            <div class="book-author">Jeffrey Archer</div>
+                            <div class="book-status borrowed">Đã mượn</div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách nổi bật">
+                        <div class="book-info">
+                            <div class="book-title">Tuổi Trẻ Đáng Giá Bao Nhiêu</div>
+                            <div class="book-author">Rosie Nguyễn</div>
+                            <div class="book-status available">Có sẵn</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="featured-section">
+                <h2>Sách Mới</h2>
+                <div class="book-grid">
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách mới">
+                        <div class="book-info">
+                            <div class="book-title">Sapiens: Lược Sử Loài Người</div>
+                            <div class="book-author">Yuval Noah Harari</div>
+                            <div class="book-status available">Có sẵn</div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách mới">
+                        <div class="book-info">
+                            <div class="book-title">Homo Deus: Lược Sử Tương Lai</div>
+                            <div class="book-author">Yuval Noah Harari</div>
+                            <div class="book-status available">Có sẵn</div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách mới">
+                        <div class="book-info">
+                            <div class="book-title">Atomic Habits</div>
+                            <div class="book-author">James Clear</div>
+                            <div class="book-status available">Có sẵn</div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <img src="/api/placeholder/250/200" alt="Sách mới">
+                        <div class="book-info">
+                            <div class="book-title">Tư Duy Nhanh Và Chậm</div>
+                            <div class="book-author">Daniel Kahneman</div>
+                            <div class="book-status borrowed">Đã mượn</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tìm Kiếm Sách -->
+        <div class="page" id="search">
+            <h2>Tìm Kiếm Sách</h2>
+            <div class="card">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Nhập tên sách, tác giả hoặc từ khóa...">
+                    <select id="search-category">
+                        <option value="all">Tất cả thể loại</option>
+                        <option value="fiction">Tiểu thuyết</option>
+                        <option value="science">Khoa học</option>
+                        <option value="history">Lịch sử</option>
+                        <option value="business">Kinh doanh</option>
+                        <option value="selfhelp">Phát triển bản thân</option>
+                    </select>
+                    <button id="search-btn">Tìm Kiếm</button>
+                </div>
+            </div>
+
+            <div class="book-grid" id="search-results">
+                <div class="book-card">
+                    <img src="/api/placeholder/250/200" alt="Đắc Nhân Tâm">
+                    <div class="book-info">
+                        <div class="book-title">Đắc Nhân Tâm</div>
+                        <div class="book-author">Dale Carnegie</div>
+                        <div class="book-status available">Có sẵn</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="/api/placeholder/250/200" alt="Nhà Giả Kim">
+                    <div class="book-info">
+                        <div class="book-title">Nhà Giả Kim</div>
+                        <div class="book-author">Paulo Coelho</div>
+                        <div class="book-status available">Có sẵn</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="/api/placeholder/250/200" alt="Hai Số Phận">
+                    <div class="book-info">
+                        <div class="book-title">Hai Số Phận</div>
+                        <div class="book-author">Jeffrey Archer</div>
+                        <div class="book-status borrowed">Đã mượn</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="/api/placeholder/250/200" alt="Tuổi Trẻ Đáng Giá Bao Nhiêu">
+                    <div class="book-info">
+                        <div class="book-title">Tuổi Trẻ Đáng Giá Bao Nhiêu</div>
+                        <div class="book-author">Rosie Nguyễn</div>
+                        <div class="book-status available">Có sẵn</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="/api/placeholder/250/200" alt="Sapiens: Lược Sử Loài Người">
+                    <div class="book-info">
+                        <div class="book-title">Sapiens: Lược Sử Loài Người</div>
+                        <div class="book-author">Yuval Noah Harari</div>
+                        <div class="book-status available">Có sẵn</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="/api/placeholder/250/200" alt="Homo Deus: Lược Sử Tương Lai">
+                    <div class="book-info">
+                        <div class="book-title">Homo Deus: Lược Sử Tương Lai</div>
+                        <div class="book-author">Yuval Noah Harari</div>
+                        <div class="book-status available">Có sẵn</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mượn & Trả Sách -->
+        <div class="page" id="borrow-return">
+            <h2>Mượn & Trả Sách</h2>
+            
+            <div class="card">
+                <h3>Mượn Sách</h3>
+                <form id="borrow-form">
+                    <input type="text" placeholder="ID Sách hoặc mã vạch" required>
+                    <input type="text" placeholder="ID Độc giả" required>
+                    <input type="date" placeholder="Ngày mượn" required>
+                    <input type="date" placeholder="Ngày hẹn trả" required>
+                    <button type="submit">Xác Nhận Mượn</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Trả Sách</h3>
+                <form id="return-form">
+                    <input type="text" placeholder="ID Sách hoặc mã vạch" required>
+                    <input type="text" placeholder="ID Độc giả" required>
+                    <input type="date" placeholder="Ngày trả" required>
+                    <button type="submit">Xác Nhận Trả</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Sách Đang Mượn</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Sách</th>
+                            <th>Tên Sách</th>
+                            <th>Ngày Mượn</th>
+                            <th>Ngày Hẹn Trả</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>B001</td>
+                            <td>Đắc Nhân Tâm</td>
+                            <td>01/04/2025</td>
+                            <td>15/04/2025</td>
+                            <td>Đang mượn</td>
+                            <td><button class="return-btn">Trả sách</button></td>
+                        </tr>
+                        <tr>
+                            <td>B003</td>
+                            <td>Hai Số Phận</td>
+                            <td>25/03/2025</td>
+                            <td>08/04/2025</td>
+                            <td>Quá hạn</td>
+                            <td><button class="return-btn">Trả sách</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h3>Lịch Sử Mượn Trả</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Sách</th>
+                            <th>Tên Sách</th>
+                            <th>Ngày Mượn</th>
+                            <th>Ngày Trả</th>
+                            <th>Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>B002</td>
+                            <td>Nhà Giả Kim</td>
+                            <td>10/03/2025</td>
+                            <td>24/03/2025</td>
+                            <td>Đã trả</td>
+                        </tr>
+                        <tr>
+                            <td>B005</td>
+                            <td>Tuổi Trẻ Đáng Giá Bao Nhiêu</td>
+                            <td>15/02/2025</td>
+                            <td>28/02/2025</td>
+                            <td>Đã trả</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quản Lý Độc Giả -->
+        <div class="page" id="readers">
+            <h2>Quản Lý Độc Giả</h2>
+            
+            <div class="card">
+                <h3>Thêm Độc Giả Mới</h3>
+                <form id="add-reader-form">
+                    <input type="text" placeholder="Họ và tên" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="tel" placeholder="Số điện thoại" required>
+                    <input type="text" placeholder="Địa chỉ" required>
+                    <button type="submit">Thêm Độc Giả</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Danh Sách Độc Giả</h3>
+                <div class="search-container">
+                    <input type="text" placeholder="Tìm kiếm độc giả...">
+                    <button>Tìm Kiếm</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ và Tên</th>
+                            <th>Email</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Số Sách Đang Mượn</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>R001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>nguyenvana@email.com</td>
+                            <td>0901234567</td>
+                            <td>1</td>
+                            <td>
+                                <button class="edit-btn">Sửa</button>
+                                <button class="delete-btn">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>R002</td>
+                            <td>Trần Thị B</td>
+                            <td>tranthib@email.com</td>
+                            <td>0909876543</td>
+                            <td>0</td>
+                            <td>
+                                <button class="edit-btn">Sửa</button>
+                                <button class="delete-btn">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>R003</td>
+                            <td>Lê Văn C</td>
+                            <td>levanc@email.com</td>
+                            <td>0905555555</td>
+                            <td>1</td>
+                            <td>
+                                <button class="edit-btn">Sửa</button>
+                                <button class="delete-btn">Xóa</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Đăng Nhập -->
+        <div class="page" id="login">
+            <h2>Đăng Nhập</h2>
+            <div class="card">
+                <form id="login-form">
+                    <input type="text" placeholder="Tên đăng nhập hoặc email" required>
+                    <input type="password" placeholder="Mật khẩu" required>
+                    <button type="submit">Đăng Nhập</button>
+                </form>
+                <p style="margin-top: 20px; text-align: center;">
+                    Chưa có tài khoản? <a href="#" class="nav-link" data-page="register">Đăng ký ngay</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Đăng Ký -->
+        <div class="page" id="register">
+            <h2>Đăng Ký</h2>
+            <div class="card">
+                <form id="register-form">
+                    <input type="text" placeholder="Họ và tên" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="text" placeholder="Tên đăng nhập" required>
+                    <input type="password" placeholder="Mật khẩu" required>
+                    <input type="password" placeholder="Xác nhận mật khẩu" required>
+                    <button type="submit">Đăng Ký</button>
+                </form>
+                <p style="margin-top: 20px; text-align: center;">
+                    Đã có tài khoản? <a href="#" class="nav-link" data-page="login">Đăng nhập</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Hệ Thống Quản Lý Thư Viện. Phát triển bởi [Tên của bạn].</p>
+        </div>
+    </footer>
+
+    <script>
+        // Xử lý chuyển đổi trang
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    // Xóa active cho tất cả các link và pages
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    pages.forEach(page => page.classList.remove('active'));
+                    
+                    // Thêm active cho link và page được click
+                    this.classList.add('active');
+                    document.getElementById(targetPage).classList.add('active');
+                });
+            });
+            
+            // Xử lý đăng nhập
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Mô phỏng đăng nhập thành công
+                document.getElementById('user-menu-guest').style.display = 'none';
+                document.getElementById('user-menu-loggedin').style.display = 'flex';
+                
+                // Chuyển về trang chủ sau khi đăng nhập
+                navLinks.forEach(link => link.classList.remove('active'));
+                pages.forEach(page => page.classList.remove('active'));
+                
+                document.querySelector('[data-page="home"]').classList.add('active');
+                document.getElementById('home').classList.add('active');
+                
+                alert('Đăng nhập thành công!');
+            });
+            
+            // Xử lý đăng ký
+            document.getElementById('register-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Mô phỏng đăng ký thành công
+                navLinks.forEach(link => link.classList.remove('active'));
+                pages.forEach(page => page.classList.remove('active'));
+                
+                document.querySelector('[data-page="login"]').classList.add('active');
+                document.getElementById('login').classList.add('active');
+                
+                alert('Đăng ký thành công! Vui lòng đăng nhập.');
+            });
+            
+            // Xử lý đăng xuất
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.getElementById('user-menu-guest').style.display = 'flex';
+                document.getElementById('user-menu-loggedin').style.display = 'none';
+                
+                // Chuyển về trang chủ sau khi đă
