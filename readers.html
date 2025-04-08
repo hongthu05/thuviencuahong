@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý độc giả - Hệ thống quản lý thư viện</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Hệ thống quản lý thư viện</h1>
+            <div class="auth-menu" id="authMenu">
+                <a href="#" id="loginBtn">Đăng nhập</a>
+                <a href="#" id="registerBtn">Đăng ký</a>
+                <a href="#" id="logoutBtn" style="display: none;">Đăng xuất</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="main-menu">
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="search.html">Tìm kiếm sách</a></li>
+                <li><a href="borrow.html">Mượn và trả sách</a></li>
+                <li><a href="readers.html" class="active">Quản lý độc giả</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="admin-required-notice" id="adminRequiredNotice">
+                <p>Chức năng này chỉ dành cho quản trị viên. Vui lòng đăng nhập với tài khoản quản trị viên.</p>
+                <button id="adminNoticeLoginBtn" class="btn">Đăng nhập</button>
+            </div>
+
+            <div class="reader-management" id="readerManagement" style="display: none;">
+                <section class="reader-search">
+                    <h2>Tìm kiếm độc giả</h2>
+                    <form id="readerSearchForm" class="search-form">
+                        <div class="search-row">
+                            <div class="form-group">
+                                <input type="text" id="readerQuery" name="query" placeholder="Nhập tên hoặc mã độc giả...">
+                            </div>
+                            <button type="submit" class="btn">Tìm kiếm</button>
+                            <button type="button" id="addReaderBtn" class="btn btn-primary">Thêm độc giả mới</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="readers-list">
+                    <h2>Danh sách độc giả</h2>
+                    <table id="readersTable">
+                        <thead>
+                            <tr>
+                                <th>Mã độc giả</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Ngày đăng ký</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="readersList">
+                            <!-- Danh sách độc giả sẽ được thêm bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Hệ thống quản lý thư viện</p>
+        </div>
+    </footer>
+
+    <!-- Modal đăng nhập -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal đăng ký -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng ký</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Tên đăng nhập:</label>
+                    <input type="text" id="regUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Mật khẩu:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal thêm độc giả -->
+    <div id="addReaderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Thêm độc giả mới</h2>
+            <form id="addReaderForm">
+                <div class="form-group">
+                    <label for="readerName">Họ tên:</label>
+                    <input type="text" id="readerName" name="readerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="readerEmail">Email:</label>
+                    <input type="email" id="readerEmail" name="readerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="readerPhone">Số điện thoại:</label>
+                    <input type="tel" id="readerPhone" name="readerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="readerAddress">Địa chỉ:</label>
+                    <textarea id="readerAddress" name="readerAddress" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn">Thêm độc giả</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
