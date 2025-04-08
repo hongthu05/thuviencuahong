@@ -1,0 +1,761 @@
+// Sample data for demonstration
+const books = [
+    { id: "B001", title: "Đắc Nhân Tâm", author: "Dale Carnegie", year: 1936, category: "self-help", available: true, publisher: "Simon & Schuster", description: "Cuốn sách nổi tiếng về các mối quan hệ giữa con người." },
+    { id: "B002", title: "Nhà Giả Kim", author: "Paulo Coelho", year: 1988, category: "fiction", available: true, publisher: "Harper Collins", description: "Câu chuyện về Santiago, một chàng chăn cừu phiêu lưu tìm kiếm kho báu." },
+    { id: "B003", title: "Tuổi Trẻ Đáng Giá Bao Nhiêu", author: "Rosie Nguyễn", year: 2016, category: "self-help", available: false, publisher: "NXB Hội Nhà Văn", description: "Cuốn sách bàn về giá trị của tuổi trẻ và những trải nghiệm đáng giá." },
+    { id: "B004", title: "Sapiens: Lược Sử Loài Người", author: "Yuval Noah Harari", year: 2011, category: "history", available: true, publisher: "NXB Thế Giới", description: "Cuốn sách nổi tiếng về lịch sử loài người." },
+    { id: "B005", title: "Học Cách Học", author: "Barbara Oakley", year: 2014, category: "education", available: true, publisher: "NXB Trẻ", description: "Phương pháp học tập hiệu quả." }
+];
+
+const readers = [
+    { id: "R001", name: "Nguyễn Văn A", email: "nguyenvana@example.com", phone: "0901234567", registerDate: "2023-01-10", status: "active" },
+    { id: "R002", name: "Trần Thị B", email: "tranthib@example.com", phone: "0912345678", registerDate: "2023-02-15", status: "active" },
+    { id: "R003", name: "Lê Văn C", email: "levanc@example.com", phone: "0923456789", registerDate: "2023-03-20", status: "inactive" }
+];
+
+const borrows = [
+    { id: "BR001", bookId: "B003", bookTitle: "Tuổi Trẻ Đáng Giá Bao Nhiêu", readerId: "R001", readerName: "Nguyễn Văn A", borrowDate: "2023-05-10", returnDate: "2023-05-25", actualReturnDate: null, status: "borrowed" },
+    { id: "BR002", bookId: "B002", bookTitle: "Nhà Giả Kim", readerId: "R002", readerName: "Trần Thị B", borrowDate: "2023-05-15", returnDate: "2023-05-30", actualReturnDate: "2023-05-28", status: "returned" }
+];
+
+// Simulated authentication
+let currentUser = null;
+let isAdmin = false;
+
+// Document ready function
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize UI based on current page
+    initPage();
+    
+    // Setup event listeners for all pages
+    setupCommonEventListeners();
+    
+    // Check for user session in localStorage
+    checkUserSession();
+});
+
+// Initialize page based on URL
+function initPage() {
+    const path = window.location.pathname;
+    
+    if (path.includes('index.html') || path.endsWith('/')) {
+        initHomePage();
+    } else if (path.includes('search.html')) {
+        initSearchPage();
+    } else if (path.includes('borrow.html')) {
+        initBorrowPage();
+    } else if (path.includes('readers.html')) {
+        initReadersPage();
+    }
+}
+
+// Setup common event listeners
+function setupCommonEventListeners() {
+    // Auth-related event listeners
+    document.getElementById('loginBtn').addEventListener('click', openLoginModal);
+    document.getElementById('registerBtn').addEventListener('click', openRegisterModal);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    
+    // Close modal on X click
+    const closeButtons = document.querySelectorAll('.close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            modal.style.display = 'none';
+        });
+    });
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+    
+    // Login form submission
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            login(username, password);
+        });
+    }
+    
+    // Register form submission
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Mật khẩu không khớp!');
+                return;
+            }
+            
+            register(username, email, password);
+        });
+    }
+}
+
+// Initialize Home Page
+function initHomePage() {
+    displayLatestBooks();
+}
+
+// Initialize Search Page
+function initSearchPage() {
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchQuery').value.toLowerCase();
+            const category = document.getElementById('category').value;
+            searchBooks(query, category);
+        });
+    }
+}
+
+// Initialize Borrow Page
+function initBorrowPage() {
+    const authRequiredNotice = document.getElementById('authRequiredNotice');
+    const borrowReturnSection = document.getElementById('borrowReturnSection');
+    
+    if (authRequiredNotice && borrowReturnSection) {
+        // Show/hide sections based on login status
+        updateBorrowPageVisibility();
+        
+        // Setup auth notice login button
+        const authNoticeLoginBtn = document.getElementById('authNoticeLoginBtn');
+        if (authNoticeLoginBtn) {
+            authNoticeLoginBtn.addEventListener('click', openLoginModal);
+        }
+        
+        // Setup borrow form
+        const borrowForm = document.getElementById('borrowForm');
+        if (borrowForm) {
+            borrowForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                borrowBook();
+            });
+        }
+        
+        // Setup return form
+        const returnForm = document.getElementById('returnForm');
+        if (returnForm) {
+            returnForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                returnBook();
+            });
+        }
+        
+        // Setup find book button
+        const findBookBtn = document.getElementById('findBookBtn');
+        if (findBookBtn) {
+            findBookBtn.addEventListener('click', function() {
+                const bookId = document.getElementById('bookId').value;
+                findBook(bookId);
+            });
+        }
+        
+        // Setup find borrow button
+        const findBorrowBtn = document.getElementById('findBorrowBtn');
+        if (findBorrowBtn) {
+            findBorrowBtn.addEventListener('click', function() {
+                const borrowId = document.getElementById('borrowId').value;
+                findBorrow(borrowId);
+            });
+        }
+        
+        // Set today's date as default for borrow and return dates
+        const today = new Date().toISOString().split('T')[0];
+        const borrowDate = document.getElementById('borrowDate');
+        const actualReturnDate = document.getElementById('actualReturnDate');
+        
+        if (borrowDate) borrowDate.value = today;
+        if (actualReturnDate) actualReturnDate.value = today;
+        
+        // Set default return date (14 days from today)
+        const returnDate = document.getElementById('returnDate');
+        if (returnDate) {
+            const twoWeeksLater = new Date();
+            twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+            returnDate.value = twoWeeksLater.toISOString().split('T')[0];
+        }
+        
+        // Display borrowed books
+        displayBorrowedBooks();
+    }
+}
+
+// Initialize Readers Page
+function initReadersPage() {
+    const adminRequiredNotice = document.getElementById('adminRequiredNotice');
+    const readerManagement = document.getElementById('readerManagement');
+    
+    if (adminRequiredNotice && readerManagement) {
+        // Show/hide sections based on admin status
+        updateReadersPageVisibility();
+        
+        // Setup admin notice login button
+        const adminNoticeLoginBtn = document.getElementById('adminNoticeLoginBtn');
+        if (adminNoticeLoginBtn) {
+            adminNoticeLoginBtn.addEventListener('click', openLoginModal);
+        }
+        
+        // Setup reader search form
+        const readerSearchForm = document.getElementById('readerSearchForm');
+        if (readerSearchForm) {
+            readerSearchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = document.getElementById('readerQuery').value.toLowerCase();
+                searchReaders(query);
+            });
+        }
+        
+        // Setup add reader button
+        const addReaderBtn = document.getElementById('addReaderBtn');
+        if (addReaderBtn) {
+            addReaderBtn.addEventListener('click', function() {
+                const addReaderModal = document.getElementById('addReaderModal');
+                if (addReaderModal) {
+                    addReaderModal.style.display = 'block';
+                }
+            });
+        }
+        
+        // Setup add reader form
+        const addReaderForm = document.getElementById('addReaderForm');
+        if (addReaderForm) {
+            addReaderForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addReader();
+            });
+        }
+        
+        // Display readers list
+        displayReaders();
+    }
+}
+
+// Auth functions
+function checkUserSession() {
+    const userData = localStorage.getItem('currentUser');
+    if (userData) {
+        currentUser = JSON.parse(userData);
+        isAdmin = currentUser.isAdmin || false;
+        updateAuthUI();
+        
+        // Update page-specific UI
+        updateBorrowPageVisibility();
+        updateReadersPageVisibility();
+    }
+}
+
+function login(username, password) {
+    // Simulated login - in a real application, this would verify against a backend
+    if (username === 'admin' && password === 'admin') {
+        currentUser = {
+            username: 'admin',
+            email: 'admin@example.com',
+            isAdmin: true
+        };
+        isAdmin = true;
+    } else if (username && password) {
+        currentUser = {
+            username: username,
+            email: username + '@example.com',
+            isAdmin: false
+        };
+        isAdmin = false;
+    } else {
+        alert('Vui lòng điền đầy đủ thông tin đăng nhập!');
+        return;
+    }
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Update UI
+    updateAuthUI();
+    updateBorrowPageVisibility();
+    updateReadersPageVisibility();
+    
+    // Close login modal
+    document.getElementById('loginModal').style.display = 'none';
+    
+    alert('Đăng nhập thành công!');
+}
+
+function register(username, email, password) {
+    // Simulated registration - in a real application, this would send data to a backend
+    if (username && email && password) {
+        currentUser = {
+            username: username,
+            email: email,
+            isAdmin: false
+        };
+        isAdmin = false;
+        
+        // Save to localStorage for persistence
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Update UI
+        updateAuthUI();
+        updateBorrowPageVisibility();
+        updateReadersPageVisibility();
+        
+        // Close register modal
+        document.getElementById('registerModal').style.display = 'none';
+        
+        alert('Đăng ký thành công!');
+    } else {
+        alert('Vui lòng điền đầy đủ thông tin đăng ký!');
+    }
+}
+
+function logout() {
+    currentUser = null;
+    isAdmin = false;
+    localStorage.removeItem('currentUser');
+    
+    // Update UI
+    updateAuthUI();
+    updateBorrowPageVisibility();
+    updateReadersPageVisibility();
+    
+    alert('Đã đăng xuất!');
+}
+
+function updateAuthUI() {
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    if (currentUser) {
+        loginBtn.style.display = 'none';
+        registerBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        logoutBtn.textContent = `Đăng xuất (${currentUser.username})`;
+    } else {
+        loginBtn.style.display = 'block';
+        registerBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+    }
+}
+
+function updateBorrowPageVisibility() {
+    const authRequiredNotice = document.getElementById('authRequiredNotice');
+    const borrowReturnSection = document.getElementById('borrowReturnSection');
+    
+    if (authRequiredNotice && borrowReturnSection) {
+        if (currentUser) {
+            authRequiredNotice.style.display = 'none';
+            borrowReturnSection.style.display = 'block';
+            displayBorrowedBooks();
+        } else {
+            authRequiredNotice.style.display = 'block';
+            borrowReturnSection.style.display = 'none';
+        }
+    }
+}
+
+function updateReadersPageVisibility() {
+    const adminRequiredNotice = document.getElementById('adminRequiredNotice');
+    const readerManagement = document.getElementById('readerManagement');
+    
+    if (adminRequiredNotice && readerManagement) {
+        if (isAdmin) {
+            adminRequiredNotice.style.display = 'none';
+            readerManagement.style.display = 'block';
+            displayReaders();
+        } else {
+            adminRequiredNotice.style.display = 'block';
+            readerManagement.style.display = 'none';
+        }
+    }
+}
+
+// Modal functions
+function openLoginModal() {
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        loginModal.style.display = 'block';
+    }
+}
+
+function openRegisterModal() {
+    const registerModal = document.getElementById('registerModal');
+    if (registerModal) {
+        registerModal.style.display = 'block';
+    }
+}
+
+// Book functions
+function displayLatestBooks() {
+    const latestBooksContainer = document.getElementById('latestBooks');
+    if (!latestBooksContainer) return;
+    
+    // Clear container
+    latestBooksContainer.innerHTML = '';
+    
+    // Display up to 4 books
+    const displayBooks = books.slice(0, 4);
+    
+    displayBooks.forEach(book => {
+        const bookCard = createBookCard(book);
+        latestBooksContainer.appendChild(bookCard);
+    });
+}
+
+function createBookCard(book) {
+    const bookCard = document.createElement('div');
+    bookCard.className = 'book-card';
+    
+    const statusClass = book.available ? 'status-available' : 'status-borrowed';
+    const statusText = book.available ? 'Có sẵn' : 'Đã mượn';
+    
+    bookCard.innerHTML = `
+        <div class="book-cover">
+            <span class="book-cover-text">${book.title}</span>
+        </div>
+        <div class="book-info">
+            <h3 class="book-title">${book.title}</h3>
+            <p class="book-author">${book.author}</p>
+            <p>Năm: ${book.year}</p>
+            <span class="book-status ${statusClass}">${statusText}</span>
+        </div>
+    `;
+    
+    return bookCard;
+}
+
+function searchBooks(query, category) {
+    const searchResultsContainer = document.getElementById('searchResults');
+    if (!searchResultsContainer) return;
+    
+    // Clear container
+    searchResultsContainer.innerHTML = '';
+    
+    // Filter books
+    const filteredBooks = books.filter(book => {
+        const matchQuery = query ? 
+            book.title.toLowerCase().includes(query) || 
+            book.author.toLowerCase().includes(query) ||
+            book.description.toLowerCase().includes(query) : true;
+        
+        const matchCategory = category ? book.category === category : true;
+        
+        return matchQuery && matchCategory;
+    });
+    
+    if (filteredBooks.length === 0) {
+        searchResultsContainer.innerHTML = '<p>Không tìm thấy sách phù hợp.</p>';
+        return;
+    }
+    
+    // Display filtered books
+    filteredBooks.forEach(book => {
+        const bookCard = createBookCard(book);
+        searchResultsContainer.appendChild(bookCard);
+    });
+}
+
+function findBook(bookId) {
+    const book = books.find(b => b.id === bookId);
+    if (book) {
+        document.getElementById('bookTitle').value = book.title;
+    } else {
+        alert('Không tìm thấy sách!');
+        document.getElementById('bookTitle').value = '';
+    }
+}
+
+function borrowBook() {
+    if (!currentUser) {
+        alert('Vui lòng đăng nhập để mượn sách!');
+        return;
+    }
+    
+    const bookId = document.getElementById('bookId').value;
+    const borrowDate = document.getElementById('borrowDate').value;
+    const returnDate = document.getElementById('returnDate').value;
+    
+    // Validate inputs
+    if (!bookId || !borrowDate || !returnDate) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+    }
+    
+    // Check if book exists and is available
+    const book = books.find(b => b.id === bookId);
+    if (!book) {
+        alert('Không tìm thấy sách!');
+        return;
+    }
+    
+    if (!book.available) {
+        alert('Sách đã được mượn!');
+        return;
+    }
+    
+    // Create new borrow record
+    const newBorrow = {
+        id: `BR${borrows.length + 1}`.padStart(5, '0'),
+        bookId: book.id,
+        bookTitle: book.title,
+        readerId: currentUser.isAdmin ? 'R001' : 'R' + Math.floor(Math.random() * 100).toString().padStart(3, '0'),
+        readerName: currentUser.username,
+        borrowDate: borrowDate,
+        returnDate: returnDate,
+        actualReturnDate: null,
+        status: 'borrowed'
+    };
+    
+    // Update book status
+    book.available = false;
+    
+    // Add to borrows array
+    borrows.push(newBorrow);
+    
+    // Update UI
+    displayBorrowedBooks();
+    
+    // Reset form
+    document.getElementById('borrowForm').reset();
+    
+    alert('Mượn sách thành công!');
+}
+
+function findBorrow(borrowId) {
+    const borrow = borrows.find(b => b.id === borrowId);
+    if (borrow) {
+        document.getElementById('returnBookTitle').value = borrow.bookTitle;
+    } else {
+        alert('Không tìm thấy phiếu mượn!');
+        document.getElementById('returnBookTitle').value = '';
+    }
+}
+
+function returnBook() {
+    const borrowId = document.getElementById('borrowId').value;
+    const actualReturnDate = document.getElementById('actualReturnDate').value;
+    const bookCondition = document.getElementById('bookCondition').value;
+    
+    // Validate inputs
+    if (!borrowId || !actualReturnDate || !bookCondition) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+    }
+    
+    // Find borrow record
+    const borrowIndex = borrows.findIndex(b => b.id === borrowId);
+    if (borrowIndex === -1) {
+        alert('Không tìm thấy phiếu mượn!');
+        return;
+    }
+    
+    // Update borrow record
+    borrows[borrowIndex].actualReturnDate = actualReturnDate;
+    borrows[borrowIndex].status = 'returned';
+    borrows[borrowIndex].bookCondition = bookCondition;
+    
+    // Update book status
+    const book = books.find(b => b.id === borrows[borrowIndex].bookId);
+    if (book) {
+        book.available = true;
+    }
+    
+    // Update UI
+    displayBorrowedBooks();
+    
+    // Reset form
+    document.getElementById('returnForm').reset();
+    
+    alert('Trả sách thành công!');
+}
+
+function displayBorrowedBooks() {
+    const borrowedBooksList = document.getElementById('borrowedBooksList');
+    if (!borrowedBooksList || !currentUser) return;
+    
+    // Clear container
+    borrowedBooksList.innerHTML = '';
+    
+    // Filter borrows for current user if not admin
+    let userBorrows = borrows;
+    if (!isAdmin) {
+        userBorrows = borrows.filter(b => b.readerName === currentUser.username);
+    }
+    
+    if (userBorrows.length === 0) {
+        borrowedBooksList.innerHTML = '<tr><td colspan="6">Không có sách đang mượn.</td></tr>';
+        return;
+    }
+    
+    // Display borrows
+    userBorrows.forEach(borrow => {
+        const tr = document.createElement('tr');
+        
+        const returnButton = borrow.status === 'borrowed' ? 
+            `<button class="btn btn-small" onclick="prepareReturn('${borrow.id}')">Trả sách</button>` : '';
+        
+        tr.innerHTML = `
+            <td>${borrow.id}</td>
+            <td>${borrow.bookTitle}</td>
+            <td>${borrow.borrowDate}</td>
+            <td>${borrow.returnDate}</td>
+            <td>${borrow.status === 'borrowed' ? 'Đang mượn' : 'Đã trả'}</td>
+            <td>${returnButton}</td>
+        `;
+        
+        borrowedBooksList.appendChild(tr);
+    });
+}
+
+function prepareReturn(borrowId) {
+    document.getElementById('borrowId').value = borrowId;
+    findBorrow(borrowId);
+    
+    // Scroll to return form
+    document.querySelector('.return-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Reader functions
+function displayReaders() {
+    const readersList = document.getElementById('readersList');
+    if (!readersList || !isAdmin) return;
+    
+    // Clear container
+    readersList.innerHTML = '';
+    
+    if (readers.length === 0) {
+        readersList.innerHTML = '<tr><td colspan="7">Không có độc giả.</td></tr>';
+        return;
+    }
+    
+    // Display readers
+    readers.forEach(reader => {
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+            <td>${reader.id}</td>
+            <td>${reader.name}</td>
+            <td>${reader.email}</td>
+            <td>${reader.phone}</td>
+            <td>${reader.registerDate}</td>
+            <td>${reader.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}</td>
+            <td>
+                <button class="btn btn-small" onclick="editReader('${reader.id}')">Sửa</button>
+                <button class="btn btn-small" onclick="toggleReaderStatus('${reader.id}')">
+                    ${reader.status === 'active' ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                </button>
+            </td>
+        `;
+        
+        readersList.appendChild(tr);
+    });
+}
+
+function searchReaders(query) {
+    const readersList = document.getElementById('readersList');
+    if (!readersList || !isAdmin) return;
+    
+    // Clear container
+    readersList.innerHTML = '';
+    
+    // Filter readers
+    const filteredReaders = readers.filter(reader => 
+        reader.name.toLowerCase().includes(query) || 
+        reader.id.toLowerCase().includes(query) ||
+        reader.email.toLowerCase().includes(query) ||
+        reader.phone.includes(query)
+    );
+    
+    if (filteredReaders.length === 0) {
+        readersList.innerHTML = '<tr><td colspan="7">Không tìm thấy độc giả phù hợp.</td></tr>';
+        return;
+    }
+    
+    // Display filtered readers
+    filteredReaders.forEach(reader => {
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+            <td>${reader.id}</td>
+            <td>${reader.name}</td>
+            <td>${reader.email}</td>
+            <td>${reader.phone}</td>
+            <td>${reader.registerDate}</td>
+            <td>${reader.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}</td>
+            <td>
+                <button class="btn btn-small" onclick="editReader('${reader.id}')">Sửa</button>
+                <button class="btn btn-small" onclick="toggleReaderStatus('${reader.id}')">
+                    ${reader.status === 'active' ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                </button>
+            </td>
+        `;
+        
+        readersList.appendChild(tr);
+    });
+}
+
+function addReader() {
+    const name = document.getElementById('readerName').value;
+    const email = document.getElementById('readerEmail').value;
+    const phone = document.getElementById('readerPhone').value;
+    const address = document.getElementById('readerAddress').value;
+    
+    // Validate inputs
+    if (!name || !email || !phone) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+        return;
+    }
+    
+    // Create new reader
+    const newReader = {
+        id: `R${readers.length + 1}`.padStart(4, '0'),
+        name: name,
+        email: email,
+        phone: phone,
+        address: address,
+        registerDate: new Date().toISOString().split('T')[0],
+        status: 'active'
+    };
+    
+    // Add to readers array
+    readers.push(newReader);
+    
+    // Update UI
+    displayReaders();
+    
+    // Close modal and reset form
+    document.getElementById('addReaderModal').style.display = 'none';
+    document.getElementById('addReaderForm').reset();
+    
+    alert('Thêm độc giả thành công!');
+}
+
+function editReader(readerId) {
+    // In a real application, this would open a modal for editing
+    alert('Tính năng đang được phát triển!');
+}
+
+function toggleReaderStatus(readerId) {
+    const readerIndex = readers.findIndex(r => r.id === readerId);
+    if (readerIndex !== -1) {
+        // Toggle status
+        readers[readerIndex].status = readers[readerIndex].status === 'active' ? 'inactive' : 'active';
+        
+        // Update UI
+        displayReaders();
+        
+        const statusText = readers[readerIndex].status === 'active' ? 'kích hoạt' : 'vô hiệu hóa';
+        alert(`Đã ${statusText} độc giả ${readers[readerIndex].name}!`);
+    }
+}
