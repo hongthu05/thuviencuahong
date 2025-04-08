@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mượn và trả sách - Hệ thống quản lý thư viện</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Hệ thống quản lý thư viện</h1>
+            <div class="auth-menu" id="authMenu">
+                <a href="#" id="loginBtn">Đăng nhập</a>
+                <a href="#" id="registerBtn">Đăng ký</a>
+                <a href="#" id="logoutBtn" style="display: none;">Đăng xuất</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="main-menu">
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="search.html">Tìm kiếm sách</a></li>
+                <li><a href="borrow.html" class="active">Mượn và trả sách</a></li>
+                <li><a href="readers.html">Quản lý độc giả</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="auth-required-notice" id="authRequiredNotice">
+                <p>Vui lòng đăng nhập để sử dụng chức năng mượn và trả sách.</p>
+                <button id="authNoticeLoginBtn" class="btn">Đăng nhập ngay</button>
+            </div>
+
+            <div class="borrow-return-section" id="borrowReturnSection" style="display: none;">
+                <section class="borrow-section">
+                    <h2>Mượn sách</h2>
+                    <form id="borrowForm">
+                        <div class="form-group">
+                            <label for="bookId">Mã sách:</label>
+                            <input type="text" id="bookId" name="bookId" required>
+                            <button type="button" id="findBookBtn" class="btn btn-small">Tìm</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="bookTitle">Tên sách:</label>
+                            <input type="text" id="bookTitle" name="bookTitle" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="borrowDate">Ngày mượn:</label>
+                            <input type="date" id="borrowDate" name="borrowDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnDate">Ngày dự kiến trả:</label>
+                            <input type="date" id="returnDate" name="returnDate" required>
+                        </div>
+                        <button type="submit" class="btn">Xác nhận mượn sách</button>
+                    </form>
+                </section>
+
+                <section class="return-section">
+                    <h2>Trả sách</h2>
+                    <form id="returnForm">
+                        <div class="form-group">
+                            <label for="borrowId">Mã phiếu mượn:</label>
+                            <input type="text" id="borrowId" name="borrowId" required>
+                            <button type="button" id="findBorrowBtn" class="btn btn-small">Tìm</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnBookTitle">Tên sách:</label>
+                            <input type="text" id="returnBookTitle" name="returnBookTitle" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="actualReturnDate">Ngày trả:</label>
+                            <input type="date" id="actualReturnDate" name="actualReturnDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bookCondition">Tình trạng sách:</label>
+                            <select id="bookCondition" name="bookCondition">
+                                <option value="good">Tốt</option>
+                                <option value="damaged">Hư hỏng nhẹ</option>
+                                <option value="badlyDamaged">Hư hỏng nặng</option>
+                                <option value="lost">Mất sách</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Xác nhận trả sách</button>
+                    </form>
+                </section>
+
+                <section class="borrowed-books">
+                    <h2>Sách đang mượn</h2>
+                    <table id="borrowedBooksTable">
+                        <thead>
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Tên sách</th>
+                                <th>Ngày mượn</th>
+                                <th>Ngày dự kiến trả</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="borrowedBooksList">
+                            <!-- Danh sách sách đang mượn sẽ được thêm bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Hệ thống quản lý thư viện</p>
+        </div>
+    </footer>
+
+    <!-- Modal đăng nhập -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal đăng ký -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng ký</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Tên đăng nhập:</label>
+                    <input type="text" id="regUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Mật khẩu:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
