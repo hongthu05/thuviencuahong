@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống quản lý thư viện</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            color: #333;
+        }
+        
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        /* Search Form */
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table th {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .status-available {
+            background-color: #e7f9ed;
+            color: #28a745;
+        }
+        
+        .status-borrowed {
+            background-color: #fff2e8;
+            color: #ff9800;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .reader-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .reader-details h3 {
+            margin-bottom: 10px;
+        }
+        
+        .reader-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .reader-info p {
+            margin: 5px 0;
+        }
+        
+        .reader-info span {
+            font-weight: 500;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid #3498db;
+            color: #3498db;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Charts */
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .chart {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+        
+        /* Statistics */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <h1>Chào mừng đến với hệ thống quản lý thư viện</h1>
+            <p>Hệ thống giúp quản lý sách, độc giả và các hoạt động mượn trả một cách hiệu quả.</p>
+        </section>
+        
+        <section class="features">
+            <div class="feature-card">
+                <h2>Tìm kiếm sách</h2>
+                <p>Dễ dàng tìm kiếm sách theo tên, tác giả, thể loại...</p>
+                <button class="btn" id="openSearchBtn">Tìm kiếm ngay</button>
+            </div>
+            
+            <div class="feature-card">
+                <h2>Mượn và trả sách</h2>
+                <p>Quản lý việc mượn và trả sách một cách hiệu quả.</p>
+                <button class="btn" id="openBorrowBtn">Quản lý mượn trả</button>
+            </div>
+            
+            <div class="feature-card">
+                <h2>Quản lý độc giả</h2>
+                <p>Theo dõi thông tin và hoạt động của độc giả.</p>
+                <button class="btn" id="openReadersBtn">Quản lý độc giả</button>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tìm kiếm sách</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form class="search-form">
+                    <input type="text" class="form-input" id="searchInput" placeholder="Nhập từ khóa tìm kiếm...">
+                    <select class="form-select" id="searchCategory">
+                        <option value="">Tất cả thể loại</option>
+                        <option value="novels">Tiểu thuyết</option>
+                        <option value="science">Khoa học</option>
+                        <option value="history">Lịch sử</option>
+                        <option value="self-help">Tâm lý - Kỹ năng sống</option>
+                        <option value="children">Thiếu nhi</option>
+                    </select>
+                    <button type="button" class="btn" id="searchButton">Tìm kiếm</button>
+                </form>
+                
+                <div id="searchResults">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mã sách</th>
+                                <th>Tên sách</th>
+                                <th>Tác giả</th>
+                                <th>Thể loại</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchResultsBody">
+                            <!-- Search results will appear here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Borrow/Return Modal -->
+    <div id="borrowModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Quản lý mượn trả sách</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <div class="tab active" data-tab="borrow">Mượn sách</div>
+                    <div class="tab" data-tab="return">Trả sách</div>
+                    <div class="tab" data-tab="history">Lịch sử mượn trả</div>
+                </div>
+                
+                <div id="borrowTab" class="tab-content active">
+                    <div class="form-group">
+                        <label for="borrowReaderId">Mã độc giả:</label>
+                        <div class="form-row">
+                            <input type="text" class="form-input" id="borrowReaderId" placeholder="Nhập mã độc giả...">
+                            <button type="button" class="btn" id="findReaderBtn">Tìm độc giả</button>
+                        </div>
+                    </div>
+                    
+                    <div id="readerDetails" class="reader-details" style="display: none;">
+                        <h3>Thông tin độc giả</h3>
+                        <div class="reader-info">
+                            <p><span>Họ tên:</span> <span id="readerName"></span></p>
+                            <p><span>Email:</span> <span id="readerEmail"></span></p>
+                            <p><span>Số điện thoại:</span> <span id="readerPhone"></span></p>
+                            <p><span>Số sách đang mượn:</span> <span id="borrowedCount"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="borrowBookId">Mã sách:</label>
+                        <div class="form-row">
+                            <input type="text" class="form-input" id="borrowBookId" placeholder="Nhập mã sách...">
+                            <button type="button" class="btn" id="findBookBtn">Tìm sách</button>
+                        </div>
+                    </div>
+                    
+                    <div id="bookDetails" class="reader-details" style="display: none;">
+                        <h3>Thông tin sách</h3>
+                        <div class="reader-info">
+                            <p><span>Tên sách:</span> <span id="bookTitle"></span></p>
+                            <p><span>Tác giả:</span> <span id="bookAuthor"></span></p>
+                            <p><span>Thể loại:</span> <span id="bookCategory"></span></p>
+                            <p><span>Trạng thái:</span> <span id="bookStatus"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="borrowDate">Ngày mượn:</label>
+                        <input type="date" class="form-input" id="borrowDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="returnDate">Ngày hẹn trả:</label>
+                        <input type="date" class="form-input" id="returnDate">
+                    </div>
+                    
+                    <button type="button" class="btn" id="createBorrowBtn">Tạo phiếu mượn</button>
+                </div>
+                
+                <div id="returnTab" class="tab-content">
+                    <div class="form-group">
+                        <label for="returnBorrowId">Mã phiếu mượn:</label>
+                        <div class="form-row">
+                            <input type="text" class="form-input" id="returnBorrowId" placeholder="Nhập mã phiếu mượn...">
+                            <button type="button" class="btn" id="findBorrowBtn">Tìm phiếu mượn</button>
+                        </div>
+                    </div>
+                    
+                    <div id="borrowDetails" class="reader-details" style="display: none;">
+                        <h3>Thông tin phiếu mượn</h3>
+                        <div class="reader-info">
+                            <p><span>Mã phiếu:</span> <span id="borrowId"></span></p>
+                            <p><span>Độc giả:</span> <span id="borrowReaderName"></span></p>
+                            <p><span>Sách:</span> <span id="borrowBookTitle"></span></p>
+                            <p><span>Ngày mượn:</span> <span id="borrowDateInfo"></span></p>
+                            <p><span>Ngày hẹn trả:</span> <span id="returnDateInfo"></span></p>
+                            <p><span>Trạng thái:</span> <span id="borrowStatus"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actualReturnDate">Ngày trả thực tế:</label>
+                        <input type="date" class="form-input" id="actualReturnDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="returnNotes">Ghi chú:</label>
+                        <textarea class="form-input" id="returnNotes" rows="3" placeholder="Nhập ghi chú nếu có..."></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn" id="createReturnBtn">Tạo phiếu trả</button>
+                </div>
+                
+                <div id="historyTab" class="tab-content">
+                    <div class="form-group">
+                        <label for="historyReaderId">Tìm theo độc giả (không bắt buộc):</label>
+                        <input type="text" class="form-input" id="historyReaderId" placeholder="Nhập mã độc giả...">
+                    </div>
+                    
+                    <button type="button" class="btn" id="searchHistoryBtn">Tìm kiếm lịch sử</button>
+                    
+                    <div id="borrowHistory" style="margin-top: 20px;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mã phiếu</th>
+                                    <th>Độc giả</th>
+                                    <th>Sách</th>
+                                    <th>Ngày mượn</th>
+                                    <th>Ngày hẹn trả</th>
+                                    <th>Ngày trả thực tế</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyResultsBody">
+                                <!-- History results will appear here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Readers Modal -->
+    <div id="readersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Quản lý độc giả</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <div class="tab active" data-tab="readers-list">Danh sách độc giả</div>
+                    <div class="tab" data-tab="add-reader">Thêm độc giả mới</div>
+                    <div class="tab" data-tab="reader-stats">Thống kê</div>
+                </div>
+                
+                <div id="readersListTab" class="tab-content active">
+                    <div class="search-form">
+                        <input type="text" class="form-input" id="readerSearchInput" placeholder="Tìm kiếm độc giả...">
+                        <button type="button" class="btn" id="searchReadersBtn">Tìm kiếm</button>
+                    </div>
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mã độc giả</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Số sách đang mượn</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="readersResultsBody">
+                            <!-- Readers results will appear here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="addReaderTab" class="tab-content">
+                    <form id="addReaderForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="readerName">Họ tên:</label>
+                                <input type="text" class="form-input" id="newReaderName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="readerEmail">Email:</label>
+                                <input type="email" class="form-input" id="newReaderEmail" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="readerPhone">Số điện thoại:</label>
+                                <input type="tel" class="form-input" id="newReaderPhone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="readerAddress">Địa chỉ:</label>
+                                <input type="text" class="form-input" id="newReaderAddress" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="readerBirthdate">Ngày sinh:</label>
+                            <input type="date" class="form-input" id="newReaderBirthdate" required>
+                        </div>
+                        
+                        <button type="submit" class="btn">Thêm độc giả</button>
+                    </form>
+                </div>
+                
+                <div id="readerStatsTab" class="tab-content">
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalReaders">0</div>
+                            <div class="stat-label">Tổng số độc giả</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value" id="activeReaders">0</div>
+                            <div class="stat-label">Độc giả đang hoạt động</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalBorrows">0</div>
+                            <div class="stat-label">Tổng lượt mượn sách</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value" id="overdueBooks">0</div>
+                            <div class="stat-label">Sách quá hạn</div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts">
+                        <div class="chart">
+                            <h3 class="chart-title">Lượt mượn sách theo tháng</h3>
+                            <div class="chart-container" id="monthlyBorrowChart">
+                                <!-- Chart will be rendered here -->
+                                <div id="chartPlaceholder" style="height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; color: #666; border-radius: 4px;">
+                                    Biểu đồ lượt mượn sách
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart">
+                            <h3 class="chart-title">Thể loại sách được mượn nhiều nhất</h3>
+                            <div class="chart-container" id="categoryChart">
+                                <!-- Chart will be rendered here -->
+                                <div id="chartPlaceholder2" style="height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; color: #666; border-radius: 4px;">
+                                    Biểu đồ thể loại sách
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let books = [
+            { id: 'B001', title: 'Đắc Nhân Tâm', author: 'Dale Carnegie', category: 'self-help', status: 'available' },
+            { id: 'B002', title: 'Nhà Giả Kim', author: 'Paulo Coelho', category: 'novels', status: 'available' },
+            { id: 'B003', title: 'Sapiens: Lược Sử Loài Người', author: 'Yuval Noah Harari', category: 'history', status: 'borrowed' },
+            { id: 'B004', title: 'Cuộc Sống Không Giới Hạn', author: 'Nick Vujicic', category: 'self-help', status: 'available' },
+            { id: 'B005', title: 'Tôi Tài Giỏi, Bạn Cũng Thế', author: 'Adam Khoo', category: 'self-help', status: 'borrowed' },
+            { id: 'B006', title: 'Dạy Con Làm Giàu', author: 'Robert Kiyosaki', category: 'self-help', status: 'available' },
+            { id: 'B007', title: 'Bí Mật Của May Mắn', author: 'Brian Tracy', category: 'self-help', status: 'available' },
+            { id: 'B008', title: 'Điều Kỳ Diệu Của Thái Độ Sống', author: 'Norman Vincent Peale', category: 'self-help', status: 'borrowed' },
+            { id: 'B009', title: 'Chiến Tranh Và Hòa Bình', author: 'Lev Tolstoy', category: 'novels', status: 'available' },
+            { id: 'B010', title: 'Từ Điển Tiếng "Em"', author: 'Khotudien', category: 'novels', status: 'borrowed' },
+            { id: 'B011', title: 'Trăm Năm Cô Đơn', author: 'Gabriel García Márquez', category: 'novels', status: 'available' },
+            { id: 'B012', title: 'Đời Ngắn Đừng Ngủ Dài', author: 'Robin Sharma', category: 'self-help', status: 'available' }
+        ];
+        
+        let readers = [
+            { id: 'R001', name: 'Nguyễn Văn A', email: 'nguyenvana@email.com', phone: '0901234567', address: 'Hà Nội', birthdate: '1995-05-15', borrowedBooks: 2 },
+            { id: 'R002', name: 'Trần Thị B', email: 'tranthib@email.com', phone: '0912345678', address: 'TP. HCM', birthdate: '1998-10-20', borrowedBooks: 0 },
+            { id: 'R003', name: 'Lê Văn C', email: 'levanc@email.com', phone: '0923456789', address: 'Đà Nẵng', birthdate: '1990-03-25', borrowedBooks: 1 },
+            { id: 'R004', name: 'Phạm Thị D', email: 'phamthid@email.com', phone: '0934567890', address: 'Cần Thơ', birthdate: '2000-12-10', borrowedBooks: 0 },
+            { id: 'R005', name: 'Hoàng Văn E', email: 'hoangvane@email.com', phone: '0945678901', address: 'Hải Phòng', birthdate: '1985-07-30', borrowedBooks: 3 }
+        ];
+        
+        let borrowings = [
+            { id: 'BR001', readerId: 'R001', bookId: 'B003', readerName: 'Nguyễn Văn A', bookTitle: 'Sapiens: Lược Sử Loài Người', borrowDate: '2023-04-01', returnDueDate: '2023-04-15', actualReturnDate: null, status: 'borrowed' },
+            { id: 'BR002', readerId: 'R003', bookId: 'B005', readerName: 'Lê Văn C', bookTitle: 'Tôi Tài Giỏi, Bạn Cũng Thế', borrowDate: '2023-04-05', returnDueDate: '2023-04-19', actualReturnDate: null, status: 'borrowed' },
+            { id: 'BR003', readerId: 'R001', bookId: 'B008', readerName: 'Nguyễn Văn A', bookTitle: 'Điều Kỳ Diệu Của Thái Độ Sống
