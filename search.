@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm kiếm sách - Hệ thống quản lý thư viện</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Hệ thống quản lý thư viện</h1>
+            <div class="auth-menu" id="authMenu">
+                <a href="#" id="loginBtn">Đăng nhập</a>
+                <a href="#" id="registerBtn">Đăng ký</a>
+                <a href="#" id="logoutBtn" style="display: none;">Đăng xuất</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="main-menu">
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="search.html" class="active">Tìm kiếm sách</a></li>
+                <li><a href="borrow.html">Mượn và trả sách</a></li>
+                <li><a href="readers.html">Quản lý độc giả</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <section class="search-section">
+                <h2>Tìm kiếm sách</h2>
+                
+                <form id="searchForm" class="search-form">
+                    <div class="search-row">
+                        <div class="form-group">
+                            <input type="text" id="searchQuery" name="query" placeholder="Nhập tên sách, tác giả...">
+                        </div>
+                        <div class="form-group">
+                            <select id="category" name="category">
+                                <option value="">Tất cả thể loại</option>
+                                <option value="fiction">Tiểu thuyết</option>
+                                <option value="science">Khoa học</option>
+                                <option value="history">Lịch sử</option>
+                                <option value="technology">Công nghệ</option>
+                                <option value="art">Nghệ thuật</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Tìm kiếm</button>
+                    </div>
+                    
+                    <div class="advanced-search">
+                        <div class="form-group">
+                            <label for="author">Tác giả:</label>
+                            <input type="text" id="author" name="author">
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Năm xuất bản:</label>
+                            <input type="number" id="year" name="year" min="1900" max="2025">
+                        </div>
+                        <div class="form-group">
+                            <label for="publisher">Nhà xuất bản:</label>
+                            <input type="text" id="publisher" name="publisher">
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="search-results">
+                <h3>Kết quả tìm kiếm</h3>
+                <div id="searchResults" class="book-list">
+                    <!-- Kết quả tìm kiếm sẽ được thêm bằng JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Hệ thống quản lý thư viện</p>
+        </div>
+    </footer>
+
+    <!-- Modal đăng nhập -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal đăng ký -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng ký</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Tên đăng nhập:</label>
+                    <input type="text" id="regUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Mật khẩu:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
