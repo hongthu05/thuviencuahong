@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư Viện - Hồng Thư</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            color: #3f51b5;
+            font-size: 24px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-left: 20px;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            color: #3f51b5;
+        }
+        
+        .btn-login {
+            background-color: #3f51b5;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-login:hover {
+            background-color: #303f9f;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("/api/placeholder/1200/600");
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+            margin-bottom: 40px;
+        }
+        
+        .hero h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .search-btn {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #303f9f;
+        }
+        
+        /* Book Section */
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .books-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .book-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .book-image {
+            height: 300px;
+            width: 100%;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .book-details {
+            padding: 15px;
+        }
+        
+        .book-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .book-author {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .book-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .status-available {
+            background-color: #c8e6c9;
+            color: #388e3c;
+        }
+        
+        .status-borrowed {
+            background-color: #ffccbc;
+            color: #d84315;
+        }
+
+        .borrow-btn {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .borrow-btn:hover {
+            background-color: #303f9f;
+        }
+        
+        .borrow-btn:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+        }
+        
+        /* Category Section */
+        .categories {
+            margin-bottom: 50px;
+        }
+        
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .category-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .category-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-item i {
+            font-size: 24px;
+            color: #3f51b5;
+            margin-bottom: 10px;
+        }
+        
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .login-btn {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .login-btn:hover {
+            background-color: #303f9f;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .register-link a {
+            color: #3f51b5;
+            text-decoration: none;
+        }
+        
+        /* Book Detail Modal */
+        .book-detail-modal .modal-content {
+            max-width: 800px;
+            padding: 0;
+        }
+        
+        .book-detail-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+        
+        .book-detail-header {
+            display: flex;
+            padding: 30px;
+            background-color: #f5f5f5;
+        }
+        
+        .book-detail-image {
+            width: 200px;
+            height: 300px;
+            background-color: #eee;
+            margin-right: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .book-detail-info {
+            flex: 1;
+        }
+        
+        .book-detail-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .book-detail-author {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .book-detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .meta-item {
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .meta-label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .book-detail-body {
+            padding: 30px;
+        }
+        
+        .book-description {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+            display: none;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .add-book-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .add-book-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .admin-table th {
+            background-color: #f5f5f5;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edit-btn {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 0;
+        }
+        
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .contact-info p {
+            margin-bottom: 10px;
+            color: #bbb;
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-menu {
+                margin-top: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-menu li {
+                margin: 5px 10px;
+            }
+            
+            .hero h2 {
+                font-size: 28px;
+            }
+            
+            .book-detail-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .book-detail-image {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="/api/placeholder/50/50" alt="Logo">
+                <h1>Thư Viện Hồng Thư</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active">Trang chủ</a></li>
+                <li><a href="#books">Sách</a></li>
+                <li><a href="#categories">Danh mục</a></li>
+                <li><a href="#about">Giới thiệu</a></li>
+                <li><a href="#contact">Liên hệ</a></li>
+                <li><a href="#" class="btn-login" id="loginBtn">Đăng nhập</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Khám phá kho tàng tri thức</h2>
+            <p>Hàng ngàn đầu sách chất lượng đang chờ bạn khám phá. Tìm kiếm, mượn và trả sách một cách dễ dàng.</p>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm sách, tác giả...">
+                <button class="search-btn" id="searchBtn">Tìm kiếm</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Section -->
+    <section id="books" class="books section">
+        <div class="container">
+            <h2 class="section-title">Sách mới nhất</h2>
+            <div class="books-container" id="booksContainer">
+                <!-- Books will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="categories section">
+        <div class="container">
+            <h2 class="section-title">Danh mục sách</h2>
+            <div class="category-list">
+                <div class="category-item" data-category="fiction">
+                    <i>📚</i>
+                    <h3>Tiểu thuyết</h3>
+                </div>
+                <div class="category-item" data-category="science">
+                    <i>🔬</i>
+                    <h3>Khoa học</h3>
+                </div>
+                <div class="category-item" data-category="history">
+                    <i>🏛️</i>
+                    <h3>Lịch sử</h3>
+                </div>
+                <div class="category-item" data-category="biography">
+                    <i>👤</i>
+                    <h3>Tiểu sử</h3>
+                </div>
+                <div class="category-item" data-category="children">
+                    <i>🧸</i>
+                    <h3>Thiếu nhi</h3>
+                </div>
+                <div class="category-item" data-category="education">
+                    <i>🎓</i>
+                    <h3>Giáo dục</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section id="adminPanel" class="admin-panel">
+        <div class="container">
+            <div class="admin-header">
+                <h2>Quản lý sách</h2>
+                <button class="add-book-btn" id="addBookBtn">Thêm sách mới</button>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên sách</th>
+                        <th>Tác giả</th>
+                        <th>Danh mục</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="adminBooksList">
+                    <!-- Admin books list will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>Thư Viện Hồng Thư</h3>
+                <p>Nơi kết nối tri thức và đam mê đọc sách.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Liên kết nhanh</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Trang chủ</a></li>
+                    <li><a href="#books">Sách</a></li>
+                    <li><a href="#categories">Danh mục</a></li>
+                    <li><a href="#about">Giới thiệu</a></li>
+                    <li><a href="#contact">Liên hệ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact-info">
+                <h3>Liên hệ</h3>
+                <p>Email: info@thuvienhongthu.com</p>
+                <p>Điện thoại: (84) 123-456-789</p>
+                <p>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Thư Viện Hồng Thư. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đăng nhập</h2>
+                <button class="close-modal" id="closeLoginModal">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">Đăng nhập</button>
+            </form>
+            <div class="register-link">
+                <p>Chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Detail Modal -->
+    <div class="modal book-detail-modal" id="bookDetailModal">
+        <div class="modal-content">
+            <div class="book-detail-content" id="bookDetailContent">
+                <!-- Book details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Book Modal -->
+    <div class="modal" id="bookFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bookFormTitle">Thêm sách mới</h2>
+                <button class="close-modal" id="closeBookFormModal">&times;</button>
+            </div>
+            <form id="bookForm">
+                <input type="hidden" id="bookId">
+                <div class="form-group">
+                    <label for="bookTitle">Tên sách</label>
+                    <input type="text" id="bookTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookAuthor">Tác giả</label>
+                    <input type="text" id="bookAuthor" name="author" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookCategory">Danh mục</label>
+                    <select id="bookCategory" name="category" required>
+                        <option value="">Chọn danh mục</option>
+                        <option value="fiction">Tiểu thuyết</option>
+                        <option value="science">Khoa học</option>
+                        <option value="history">Lịch sử</option>
+                        <option value="biography">Tiểu sử</option>
+                        <option value="children">Thiếu nhi</option>
+                        <option value="education">Giáo dục</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bookDescription">Mô tả</label>
+                    <textarea id="bookDescription" name="description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="bookPublisher">Nhà xuất bản</label>
+                    <input type="text" id="bookPublisher" name="publisher" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookYear">Năm xuất bản</label>
+                    <input type="number" id="bookYear" name="year" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookStatus">Trạng thái</label>
+                    <select id="bookStatus" name="status" required>
+                        <option value="available">Có sẵn</option>
+                        <option value="borrowed">Đã mượn</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn" id="saveBookBtn">Lưu</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for books
+        let books = [
+            {
+                id: 1,
+                title: "Đắc Nhân Tâm",
+                author: "Dale Carnegie",
+                category: "education",
+                description: "Đắc nhân tâm (How to Win Friends and Influence People) là một quyển sách nhằm tự giúp bản thân (self-help) bán chạy nhất từ trước đến nay. Tác phẩm được xuất bản lần đầu vào năm 1936 và đã bán được hơn 30 triệu bản trên thế giới.",
+                publisher: "NXB Tổng hợp TP.HCM",
+                publishYear: 2016,
+                status: "available",
+                image: "/api/placeholder/200/300"
+            },
+            {
+                id: 2,
+                title: "Nhà Giả Kim",
+                author: "Paulo Coelho",
+                category: "fiction",
+                description: "Tiểu thuyết Nhà giả kim của Paulo Coelho như một câu chuyện cổ tích giản dị, nhân ái, giàu chất thơ, thấm đẫm những minh triết huyền bí của phương Đông.",
+                publisher: "NXB Hội Nhà Văn",
+                publishYear: 2020,
+                status: "available",
+                image: "/api/placeholder/200/300"
+            },
+            {
+                id: 3,
+                title: "Sapiens: Lược Sử Loài Người",
+                author: "Yuval Noah Harari",
+                category: "history",
+                description: "Sapiens là một câu chuyện lịch sử của loài người, từ thời kỳ đồ đá cho đến hiện tại và tương lai.",
+                publisher: "NXB Thế Giới",
+                publishYear: 2018,
+                status: "borrowed",
+                image: "/api/placeholder/200/300"
+            },
+            {
+                id: 4,
+                title: "Homo Deus: Lược Sử Tương Lai",
+                author: "Yuval Noah Harari",
+                category: "science",
+                description: "Homo Deus: Lược sử tương lai nói về những khả năng mới của nhân loại - từ việc vượt qua cái chết cho đến sự sáng tạo của trí tuệ nhân tạo.",
+                publisher: "NXB Thế Giới",
+                publishYear: 2019,
+                status: "available",
+                image: "/api/placeholder/200/300"
+            },
+            {
+                id: 5,
+                title: "Cuộc Đời Của Pi",
+                author: "Yann Martel",
+                category: "fiction",
+                description: "Cuộc đời của Pi là một cuốn tiểu thuyết về cuộc phiêu lưu của một cậu bé người Ấn Độ sống sót sau vụ đắm tàu và cuộc hành trình đầy nguy hiểm cùng với một con hổ Bengal.",
+                publisher: "NXB Văn Học",
+                publishYear: 2017,
+                status: "available",
+                image: "/api/placeholder/200/300"
+            },
+            {
+                id: 6,
+                title: "Steve Jobs",
+                author: "Walter Isaacson",
+                category: "biography",
+                description: "Tiểu sử độc quyền về Steve Jobs được viết từ hơn 40 cuộc phỏng vấn với Jobs và hơn 100 cuộc phỏng vấn với bạn bè, gia đình, đối thủ và đồng nghiệp.",
+                publisher: "NXB Trẻ",
+                publishYear: 2020,
+                status: "borrowed",
+                image: "/api/placeholder/200/300"
+            }
+        ];
+
+        // User data
+        let users = [
+            {
+                id: 1,
+                username: "admin",
+                password: "admin123",
+                role: "admin",
+                name: "Admin User"
+            },
+            {
+                id: 2,
+                username: "user",
+                password: "user123",
+                role: "user",
+                name: "Regular User"
+            }
+        ];
+
+        // Track borrowing history
+        let borrowingHistory = [];
+
+        // Current logged in user
+        let currentUser = null;
+
+        // DOM Elements
+        const booksContainer = document.getElementById('booksContainer');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const loginForm = document.getElementById('loginForm');
+        const bookDetailModal = document.getElementById('bookDetailModal');
+        const bookDetailContent = document.getElementById('bookDetailContent');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminBooksList = document.getElementById('adminBooksList');
+        const addBookBtn = document.getElementById('addBookBtn');
+        const bookFormModal = document.getElementById('bookFormModal');
+        const closeBookFormModal = document.getElementById('closeBookFormModal');
+        const bookForm = document.getElementById('bookForm');
+        const bookFormTitle = document.getElementById('bookFormTitle');
+        const categoryItems = document.querySelectorAll('.category-item');
+
+        // Load books
+        function loadBooks(filteredBooks = null) {
+            const booksToDisplay = filteredBooks || books;
+            booksContainer.innerHTML = '';
+
+            if (booksToDisplay.length === 0) {
+                booksContainer.innerHTML = '<p class="no-results">Không tìm thấy sách phù hợp</p>';
+                return;
+            }
+
+            booksToDisplay.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
