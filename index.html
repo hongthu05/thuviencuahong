@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống quản lý thư viện</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Hệ thống quản lý thư viện</h1>
+            <div class="auth-menu" id="authMenu">
+                <a href="#" id="loginBtn">Đăng nhập</a>
+                <a href="#" id="registerBtn">Đăng ký</a>
+                <a href="#" id="logoutBtn" style="display: none;">Đăng xuất</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="main-menu">
+                <li><a href="index.html" class="active">Trang chủ</a></li>
+                <li><a href="search.html">Tìm kiếm sách</a></li>
+                <li><a href="borrow.html">Mượn và trả sách</a></li>
+                <li><a href="readers.html">Quản lý độc giả</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h2>Chào mừng đến với hệ thống quản lý thư viện</h2>
+                <p>Hệ thống giúp quản lý sách, độc giả và các hoạt động mượn trả một cách hiệu quả.</p>
+            </section>
+
+            <section class="features">
+                <div class="feature-card">
+                    <h3>Tìm kiếm sách</h3>
+                    <p>Dễ dàng tìm kiếm sách theo tên, tác giả, thể loại...</p>
+                    <a href="search.html" class="btn">Tìm kiếm ngay</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Mượn và trả sách</h3>
+                    <p>Quản lý việc mượn và trả sách một cách hiệu quả.</p>
+                    <a href="borrow.html" class="btn">Quản lý mượn trả</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Quản lý độc giả</h3>
+                    <p>Theo dõi thông tin và hoạt động của độc giả.</p>
+                    <a href="readers.html" class="btn">Quản lý độc giả</a>
+                </div>
+            </section>
+
+            <section class="latest-books">
+                <h2>Sách mới nhất</h2>
+                <div class="book-list" id="latestBooks">
+                    <!-- Sách mới sẽ được thêm bằng JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Hệ thống quản lý thư viện</p>
+        </div>
+    </footer>
+
+    <!-- Modal đăng nhập -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal đăng ký -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng ký</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Tên đăng nhập:</label>
+                    <input type="text" id="regUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Mật khẩu:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
